@@ -1,0 +1,64 @@
+<table>
+	<tr>
+		<th>S.NO</th>
+		<th>File name</th>
+		<th>Batch</th>
+		<th>Product Name</th>
+		<th>Expiry date</th>
+		<th>M.R.P</th>
+		<th>Quantity</th>
+		<th>Status</th>
+	</tr>
+	<tbody id="medicine_stock">
+		
+	</tbody>
+</table>
+
+<script>
+	
+	$.ajax({
+          url: "/agarwal_software/compare1",
+          cache: false,
+          contentType: false,
+          processData: false,
+          type: 'GET',
+          success: function(data) {
+          	 // debugger;
+          	 console.log(data)
+          	 console.log(Object.keys(data.hash_file2).length)
+          	file = Object.keys(data.hash_file_1)
+          	tbody = ""
+          	for(i = 0; i < Object.keys(data.hash_file_1).length; i++)
+          	{
+          		a = file[i]
+          		file1 = data.hash_file_1[a]
+          		file2 = data.hash_file2[a]
+          		// tbody = "<tr><td>qcdb<br>jk1</td><td></tr>"
+          		if(file2 != undefined)
+          		{
+          		  status = "UNMATCHED"
+          		  if(parseInt(file1['quantity']) == parseInt(file2['QNTY']))
+          		  {
+          		  	status = "MATCHED"
+          		  }
+          		  tbody += "<tr><td>"+(i+1)+"</td><td>"+data.file1_name+"<br>"+data.file2_name+"</td><td>"+file1['batch']+"<br>"+file2["BATCH"]+"</td><td>"+file1['product']+"<br>"+file2["PRODUCT"]+"</td><td>"+file1['exp.']+"<br>"+file2['EXPIR']+"</td><td>"+file1['m.r.p']+"<br>"+file2['M.R.P']+"</td><td>"+file1['quantity']+"<br>"+file2['QNTY']+"</td><td>"+status+"</td></tr>"
+          		  delete data.hash_file2[a];
+          		}
+          		else
+          		{
+          			tbody += "<tr><td>"+(i+1)+"</td><td>"+data.file1_name+"<br>"+data.file2_name+"</td><td>"+file1['batch']+"<br>-</td><td>"+file1['product']+"<br>-</td><td>"+file1['exp.']+"<br>-</td><td>"+file1['m.r.p']+"<br>-</td><td>"+file1['quantity']+"<br>-</td><td>NOT FOUND</td></tr>"
+          		}
+          	}
+          	file = Object.keys(data.hash_file2)
+          	for(i = 0; i < Object.keys(data.hash_file2).length; i++)
+          	{
+          		a = file[i]
+          		file2 = data.hash_file2[a]
+          		tbody += "<tr><td>"+(i+1)+"</td><td>"+data.file1_name+"<br>"+data.file2_name+"</td><td>-<br>"+file2["BATCH"]+"</td><td>-<br>"+file2["PRODUCT"]+"</td><td>-<br>"+file2['EXPIR']+"</td><td>-<br>"+file2['M.R.P']+"</td><td>-<br>"+file2['QNTY']+"</td><td>NOT FOUND</td></tr>"
+          	}
+          	$("#medicine_stock").html(tbody);
+          	console.log(data.hash_file2)
+          	console.log(Object.keys(data.hash_file2).length)
+          }
+      })
+</script>

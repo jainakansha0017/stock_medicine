@@ -1,0 +1,94 @@
+<table>
+	<tr>
+		<th>S.NO</th>
+		<th>File name</th>
+		<th>Batch</th>
+		<th>Product Name</th>
+		<th>Expiry date</th>
+		<th>M.R.P</th>
+		<th>Rate</th>
+		<th>Discount %</th>
+		<th>Quantity</th>
+		<th>Status</th>
+	</tr>
+	<tbody id="medicine_stock">
+		
+	</tbody>
+</table>
+
+<script>
+	
+	$.ajax({
+          url: "/agarwal_software/compare_product1",
+          cache: false,
+          contentType: false,
+          processData: false,
+          type: 'GET',
+          success: function(data) {
+          	console.log(data)
+          	file = Object.keys(data.hash_file_1)
+          	tbody = ""
+          	count = 1
+          	file1_array = []
+          	for(i = 0; i < Object.keys(data.hash_file_1).length && count<=20; i++)
+          	{
+          		a = file[i]
+          		file1 = data.hash_file_1[a]
+          		file2 = data.hash_file2[a]
+          		
+          		keys = Object.keys(data.hash_file2);
+
+				values = keys.map(function(v) { return data.hash_file2[v]; });	
+				b = values.filter(function(x) { return file1['batch'].toLowerCase() == x["BATCH"].toLowerCase()})
+         
+          		if(file2 != undefined || b.length > 0)
+          		{
+          		  if(file2 == undefined)
+          		  {
+          		  	file2 = data.hash_file2[keys.find(key => data.hash_file2[key] === b[0])];
+          		  }
+          		  status = "UNMATCHED"
+          		  if(parseInt(file1['quantity']) == parseInt(file2['QNTY']))
+          		  {
+          		  	status = "MATCHED"
+          		  }
+          		  file1_array.push(a)
+          		  tbody += "<tr><td>"+count+"</td><td>"+data.file1_name+"<br>"+data.file2_name+"</td><td>"+file1['batch']+"<br>"+file2["BATCH"]+"</td><td>"+file1['product']+"<br>"+file2["PRODUCT"]+"</td><td>"+file1['exp.']+"<br>"+file2['EXPIR']+"</td><td>"+file1['m.r.p']+"<br>"+file2['M.R.P']+"</td><td>-<br>"+file2['RATE']+"</td><td>-<br>"+file2['DIS%']+"</td><td>"+file1['quantity']+"<br>"+file2['QNTY']+"</td><td>"+status+"</td></tr>"
+          		  delete data.hash_file2[a];
+          		  count = count + 1
+          		}
+          	}
+          	file = Object.keys(data.hash_file_1)
+          	for(i = 0; i < Object.keys(data.hash_file_1).length && count<=20; i++)
+          	{
+          		a = file[i]
+          		// debugger;
+          		if(!(file1_array.includes(a)))
+          		{
+          			file1 = data.hash_file_1[a]
+          		// debugger;
+	          		if(file1['sl.'] != undefined)
+	          		{
+	          			tbody += "<tr><td>"+count+"</td><td>"+data.file1_name+"<br>"+data.file2_name+"</td><td>"+file1['batch']+"<br>-</td><td>"+file1['product']+"<br>-</td><td>"+file1['exp.']+"<br>-</td><td>"+file1['m.r.p']+"<br>-</td><td>-<br>-</td><td>-<br>-</td><td>"+file1['quantity']+"<br>-</td><td>NOT FOUND</td></tr>"
+	          			count = count + 1
+	          		}
+          		}
+          	}
+          	file = Object.keys(data.hash_file2)
+          	for(i = 0; i < Object.keys(data.hash_file2).length && count<=20; i++)
+          	{
+          		a = file[i]
+          		file2 = data.hash_file2[a]
+          		if(file2["SL"] != "")
+          		{
+          			tbody += "<tr><td>"+count+"</td><td>"+data.file1_name+"<br>"+data.file2_name+"</td><td>-<br>"+file2["BATCH"]+"</td><td>-<br>"+file2["PRODUCT"]+"</td><td>-<br>"+file2['EXPIR']+"</td><td>-<br>"+file2['M.R.P']+"</td><td>-<br>"+file2['RATE']+"</td><td>-<br>"+file2['DIS%']+"</td><td>-<br>"+file2['QNTY']+"</td><td>NOT FOUND</td></tr>"
+          			count = count + 1
+          		}
+          		
+          	}
+          	$("#medicine_stock").html(tbody);
+          	console.log(data.hash_file2)
+          	console.log(Object.keys(data.hash_file2).length)
+          }
+      })
+</script>

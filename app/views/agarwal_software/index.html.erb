@@ -1,0 +1,264 @@
+<div class="row">   
+  <div class = "col-12">           
+    <div class="btn-group" role="group" aria-label="Select Investor">
+      <label class="btn btn-default">Select Software</label>
+      <div class="DivSelec">
+        <select  class="form-control" name="software" id="software" >
+            <option value="">Select</option>
+            <option value = "agarwal" > Agarwal Software </option>
+        </select>               
+      </div>
+    </div>
+  </div>
+</div>  
+
+<div id="upload" style="display:none;">
+  <div class="row">
+    <div class="col-12 col-xl-12">
+       <div class="card" id="registration">
+          <div class="card-header">
+            <span>&nbsp;</span>Upload PDF
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-12">
+                <div class="another_user" id="iin_upload"  >
+                  <%= form_tag uploadqcdn_path,  multipart: true ,:validate=> true , id: "form1" , class: "chk_form" do |f| %> 
+                      <div class="form-group"> 
+                        <div class="row">
+                          <div class="col-md-6 col-lg-5 col-xl-5">
+                            <div>upload qcdn pdf&nbsp;*&nbsp;:</div>
+                          </div>
+                          <div class="col-md-4 col-lg-5 col-xl-5 validtor">  
+                            <%= file_field_tag 'file_qcdn', class: "form-control chk_file" , accept: 'application/pdf' %>
+                          </div>
+                          <div class="col-md-2 col-lg-2 col-xl-2">
+                            <%= submit_tag 'Upload', :class => 'btn btn-primary chk', :id => "qcdn_submit" %>
+                          </div>
+                        </div> 
+                      </div>
+                  <% end %>
+                </div> 
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<br>
+  <div id="upload_2" style="display:none;">
+  <div class="row">
+    <div class="col-12 col-xl-12">
+       <div class="card" id="registration">
+          <div class="card-header">
+            <span>&nbsp;</span>Upload JK* PDF
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-12">
+                <div class="another_user" id="iin_upload"  >
+                  <%= form_tag uploadjk_path,  multipart: true ,:validate=> true , id: "form2" , class: "chk_form" do |f| %> 
+                      <div class="form-group"> 
+                        <div class="row">
+                          <div class="col-md-6 col-lg-5 col-xl-5">
+                            <div>upload jk pdf&nbsp;*&nbsp;:</div>
+                          </div>
+                          <div class="col-md-4 col-lg-5 col-xl-5 validtor">  
+                            <%= file_field_tag 'file_jk', class: "form-control chk_file" , accept: 'application/pdf' %>
+                          </div>
+                          <div class="col-md-2 col-lg-2 col-xl-2">
+                            <%= submit_tag 'Upload And Compare', :class => 'btn btn-primary chk', :id => "jk_submit" %>
+                          </div>
+                        </div> 
+                      </div>
+                  <% end %>
+                </div> 
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <table id="compare" style="display:none;" class='table table-bordered table-striped table-sm'>
+    <tr>
+      <th>S.NO</th>
+      <th>File name</th>
+      <th>Batch</th>
+      <th>Product Name</th>
+      <th>Expiry date</th>
+      <th>M.R.P</th>
+      <th>Rate</th>
+      <th>Discount %</th>
+      <th>Quantity</th>
+      <th>Status</th>
+    </tr>
+    <tbody id="medicine_stock">
+      
+    </tbody>
+</table>
+
+  <script>
+    file1_name = ""
+    $("#software").on("change", function(){
+      if ($("#software").val() != "")
+      {
+        $("#upload").show();
+      }
+      else
+      {
+        $("#upload").hide();
+      }
+    })
+
+    $("#form1").on("submit", function(e){
+      e.preventDefault();
+      $("#qcdn_submit").attr("disabled", true);
+      $form = $(e.target);
+      var params   = $form.serializeArray();
+      formData = new FormData();
+      files    = $form.find('[name="file_qcdn"]')[0].files;
+      $.each(files, function(i, file) {
+        formData.append('file_qcdn', file);
+      });
+
+      $.each(params, function(i, val) {
+          formData.append(val.name, val.value);
+      });
+      if(files[0].name.includes("qcdn"))
+      {
+        $.ajax({
+          url: $form.attr('action'),
+          data: formData,
+          cache: false,
+          contentType: false,
+          processData: false,
+          type: 'POST',
+          success: function(data) {
+            if(data.status == "Success")
+            {
+              file1_name = data.filename;
+              $("#upload_2").show();
+            }
+            else
+            {
+              alert("Technical Problem!! Please try later")
+            }
+          }
+        });
+      }
+      else
+      {
+        alert(" Please upload the file whose name starts with qcdn")
+      }
+      
+    })
+
+    $("#form2").on("submit", function(e){
+      e.preventDefault();
+      $("#jk_submit").attr("disabled", true);
+      $form = $(e.target);
+      var params   = $form.serializeArray();
+      formData = new FormData();
+      files    = $form.find('[name="file_jk"]')[0].files;
+      $.each(files, function(i, file) {
+        formData.append('file_jk', file);
+      });
+
+      $.each(params, function(i, val) {
+          formData.append(val.name, val.value);
+      });
+      formData.append("file1_filename", file1_name);
+      if(files[0].name.includes("jk"))
+      {
+        $.ajax({
+          url: $form.attr('action'),
+          data: formData,
+          cache: false,
+          contentType: false,
+          processData: false,
+          type: 'POST',
+          success: function(data) {
+            if(data.status == "Success")
+            {
+                file = Object.keys(data.hash_file_1)
+            tbody = ""
+            count = 1
+            file1_array = []
+            for(i = 0; i < Object.keys(data.hash_file_1).length && count<=20; i++)
+            {
+              a = file[i]
+              file1 = data.hash_file_1[a]
+              file2 = data.hash_file2[a]
+              
+              keys = Object.keys(data.hash_file2);
+
+              values = keys.map(function(v) { return data.hash_file2[v]; });  
+              b = values.filter(function(x) { return file1['batch'].toLowerCase() == x["BATCH"].toLowerCase()})
+         
+              if(file2 != undefined || b.length > 0)
+              {
+                if(file2 == undefined)
+                {
+                  file2 = data.hash_file2[keys.find(key => data.hash_file2[key] === b[0])];
+                }
+                status = "UNMATCHED"
+                if(parseInt(file1['quantity']) == parseInt(file2['QNTY']))
+                {
+                  status = "MATCHED"
+                }
+                file1_array.push(a)
+                tbody += "<tr><td>"+count+"</td><td>"+data.file1_name+"<br>"+data.file2_name+"</td><td>"+file1['batch']+"<br>"+file2["BATCH"]+"</td><td>"+file1['product']+"<br>"+file2["PRODUCT"]+"</td><td>"+file1['exp.']+"<br>"+file2['EXPIR']+"</td><td>"+file1['m.r.p']+"<br>"+file2['M.R.P']+"</td><td>-<br>"+file2['RATE']+"</td><td>-<br>"+file2['DIS%']+"</td><td>"+file1['quantity']+"<br>"+file2['QNTY']+"</td><td>"+status+"</td></tr>"
+                delete data.hash_file2[a];
+                count = count + 1
+              }
+            }
+            file = Object.keys(data.hash_file_1)
+            for(i = 0; i < Object.keys(data.hash_file_1).length && count<=20; i++)
+            {
+              a = file[i]
+              // debugger;
+              if(!(file1_array.includes(a)))
+              {
+                file1 = data.hash_file_1[a]
+              // debugger;
+                if(file1['sl.'] != undefined)
+                {
+                  tbody += "<tr><td>"+count+"</td><td>"+data.file1_name+"<br>"+data.file2_name+"</td><td>"+file1['batch']+"<br>-</td><td>"+file1['product']+"<br>-</td><td>"+file1['exp.']+"<br>-</td><td>"+file1['m.r.p']+"<br>-</td><td>-<br>-</td><td>-<br>-</td><td>"+file1['quantity']+"<br>-</td><td>NOT FOUND</td></tr>"
+                  count = count + 1
+                }
+              }
+            }
+            file = Object.keys(data.hash_file2)
+            for(i = 0; i < Object.keys(data.hash_file2).length && count<=20; i++)
+            {
+              a = file[i]
+              file2 = data.hash_file2[a]
+              if(file2["SL"] != "")
+              {
+                tbody += "<tr><td>"+count+"</td><td>"+data.file1_name+"<br>"+data.file2_name+"</td><td>-<br>"+file2["BATCH"]+"</td><td>-<br>"+file2["PRODUCT"]+"</td><td>-<br>"+file2['EXPIR']+"</td><td>-<br>"+file2['M.R.P']+"</td><td>-<br>"+file2['RATE']+"</td><td>-<br>"+file2['DIS%']+"</td><td>-<br>"+file2['QNTY']+"</td><td>NOT FOUND</td></tr>"
+                count = count + 1
+              }
+              
+            }
+            $("#medicine_stock").html(tbody);
+              $("#compare").show();
+            }
+            else
+            {
+              alert("Technical Problem!! Please try later")
+            }
+          }
+        });
+      }
+      else
+      {
+        alert(" Please upload the file whose name starts with jk")
+      }
+      
+    })
+
+  </script>
